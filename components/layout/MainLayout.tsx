@@ -45,7 +45,6 @@ export type Page =
   | 'documents';
 
 // Export Page type for use in Sidebar
-export { type Page };
 
 export function MainLayout({ user, onLogout, currentPath = '', children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Default closed on mobile

@@ -102,27 +102,27 @@ export function Sidebar({ currentPage, isOpen, userRole, onSidebarToggle }: Side
     }
   ];
 
-  const loanMenuItems = [
-    { id: 'loan-create' as Page, label: 'Create Loan', icon: <FileText className="w-4 h-4" /> },
-    { id: 'loan-approval' as Page, label: 'Loan Approval', icon: <Shield className="w-4 h-4" />, roles: ['Manager', 'Admin', 'Super Admin'] },
-    { id: 'loan-list' as Page, label: 'Loan List', icon: <ClipboardList className="w-4 h-4" /> }
+  const loanMenuItems: MenuItem[] = [
+    { id: 'loan-create', label: 'Create Loan', icon: <FileText className="w-4 h-4" /> },
+    { id: 'loan-approval', label: 'Loan Approval', icon: <Shield className="w-4 h-4" />, roles: ['Manager', 'Admin', 'Super Admin'] },
+    { id: 'loan-list', label: 'Loan List', icon: <ClipboardList className="w-4 h-4" /> }
   ];
 
-  const centerMenuItems = [
-    { id: 'view-scheduling' as Page, label: 'View Scheduling', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'view-meeting-scheduling' as Page, label: 'View Meeting Scheduling', icon: <Users className="w-4 h-4" /> }
+  const centerMenuItems: MenuItem[] = [
+    { id: 'view-scheduling', label: 'View Scheduling', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'view-meeting-scheduling', label: 'View Meeting Scheduling', icon: <Users className="w-4 h-4" /> }
   ];
 
-  const collectionMenuItems = [
-    { id: 'due-list' as Page, label: 'Due List', icon: <ClipboardList className="w-4 h-4" /> },
-    { id: 'collections' as Page, label: 'Collections', icon: <DollarSign className="w-4 h-4" /> },
-    { id: 'collection-summary' as Page, label: 'Collection Summary', icon: <Receipt className="w-4 h-4" /> }
+  const collectionMenuItems: MenuItem[] = [
+    { id: 'due-list', label: 'Due List', icon: <ClipboardList className="w-4 h-4" /> },
+    { id: 'collections', label: 'Collections', icon: <DollarSign className="w-4 h-4" /> },
+    { id: 'collection-summary', label: 'Collection Summary', icon: <Receipt className="w-4 h-4" /> }
   ];
 
-  const financeMenuItems = [
-    { id: 'finance' as Page, label: 'Finance Overview', icon: <Wallet className="w-4 h-4" /> },
-    { id: 'fund-transactions' as Page, label: 'Fund Transactions', icon: <ArrowLeftRight className="w-4 h-4" />, roles: ['Super Admin', 'Admin'] },
-    { id: 'branch-transactions' as Page, label: 'Branch Transactions', icon: <Building2 className="w-4 h-4" /> }
+  const financeMenuItems: MenuItem[] = [
+    { id: 'finance', label: 'Finance Overview', icon: <Wallet className="w-4 h-4" /> },
+    { id: 'fund-transactions', label: 'Fund Transactions', icon: <ArrowLeftRight className="w-4 h-4" />, roles: ['Super Admin', 'Admin'] },
+    { id: 'branch-transactions', label: 'Branch Transactions', icon: <Building2 className="w-4 h-4" /> }
   ];
 
   const toggleMenu = (menuId: string) => {

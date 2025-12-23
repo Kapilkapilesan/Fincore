@@ -291,7 +291,9 @@ export function LoanApproval() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-900">{loan.contractNo}</span>
                         {overdueWarning && (
-                          <AlertCircle className="w-4 h-4 text-orange-600" title="Over 1 hour pending" />
+                          <span title="Over 1 hour pending">
+                            <AlertCircle className="w-4 h-4 text-orange-600" />
+                          </span>
                         )}
                       </div>
                     </td>

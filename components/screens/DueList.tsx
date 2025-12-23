@@ -31,7 +31,7 @@ export function DueList() {
               <Calendar className="w-5 h-5 text-blue-600" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Today's Due</p>
+          <p className="text-sm text-gray-600 mb-1">Today&apos;s Due</p>
           <p className="text-2xl font-bold text-gray-900">LKR {totalDue.toLocaleString()}</p>
           <p className="text-xs text-gray-500">{duePayments.length} payments</p>
         </div>
