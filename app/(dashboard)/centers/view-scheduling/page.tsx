@@ -1,6 +1,5 @@
 import { ViewScheduling } from '@/components/screens/ViewScheduling'
 
-export default function CentersPage() {
+export default function ViewSchedulingPage() {
   return <ViewScheduling />
 }
-

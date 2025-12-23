@@ -22,6 +22,8 @@ export type Page =
   | 'dashboard'
   | 'branches'
   | 'centers'
+  | 'view-scheduling'
+  | 'view-meeting-scheduling'
   | 'groups'
   | 'customers'
   | 'loan-create'
@@ -52,6 +54,8 @@ export function MainLayout({ user, onLogout, currentPath = '', children }: MainL
   const getPageFromPath = (path: string): Page => {
     if (path === '/dashboard') return 'dashboard'
     if (path.startsWith('/branches')) return 'branches'
+    if (path.startsWith('/centers/view-meeting-scheduling')) return 'view-meeting-scheduling'
+    if (path.startsWith('/centers/view-scheduling')) return 'view-scheduling'
     if (path.startsWith('/centers')) return 'centers'
     if (path.startsWith('/groups')) return 'groups'
     if (path.startsWith('/customers')) return 'customers'
@@ -112,6 +116,8 @@ export function MainLayout({ user, onLogout, currentPath = '', children }: MainL
     </div>
   );
 }
+
+
 
 
 

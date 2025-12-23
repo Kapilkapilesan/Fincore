@@ -23,7 +23,8 @@ import {
   Receipt,
   ChevronLeft,
   ChevronRight,
-  Download
+  Download,
+  Calendar
 } from 'lucide-react';
 import type { Page } from './MainLayout';
 
@@ -40,6 +41,8 @@ const getRouteFromPage = (page: Page): string => {
     'dashboard': '/dashboard',
     'branches': '/branches',
     'centers': '/centers',
+    'view-scheduling': '/centers/view-scheduling',
+    'view-meeting-scheduling': '/centers/view-meeting-scheduling',
     'groups': '/groups',
     'customers': '/customers',
     'loan-create': '/loans/create',
@@ -72,7 +75,7 @@ interface MenuItem {
 }
 
 export function Sidebar({ currentPage, isOpen, userRole, onSidebarToggle }: SidebarProps) {
-  const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['loans', 'collections', 'finance']);
+  const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['loans', 'centers', 'collections', 'finance']);
   const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   const menuItems: MenuItem[] = [
@@ -86,11 +89,6 @@ export function Sidebar({ currentPage, isOpen, userRole, onSidebarToggle }: Side
       label: 'Branches',
       icon: <Building2 className="w-5 h-5" />,
       roles: ['Super Admin', 'Admin']
-    },
-    {
-      id: 'centers',
-      label: 'Centers (CSU)',
-      icon: <Users className="w-5 h-5" />
     },
     {
       id: 'groups',
@@ -108,6 +106,11 @@ export function Sidebar({ currentPage, isOpen, userRole, onSidebarToggle }: Side
     { id: 'loan-create' as Page, label: 'Create Loan', icon: <FileText className="w-4 h-4" /> },
     { id: 'loan-approval' as Page, label: 'Loan Approval', icon: <Shield className="w-4 h-4" />, roles: ['Manager', 'Admin', 'Super Admin'] },
     { id: 'loan-list' as Page, label: 'Loan List', icon: <ClipboardList className="w-4 h-4" /> }
+  ];
+
+  const centerMenuItems = [
+    { id: 'view-scheduling' as Page, label: 'View Scheduling', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'view-meeting-scheduling' as Page, label: 'View Meeting Scheduling', icon: <Users className="w-4 h-4" /> }
   ];
 
   const collectionMenuItems = [
@@ -206,6 +209,90 @@ export function Sidebar({ currentPage, isOpen, userRole, onSidebarToggle }: Side
         
         {/* Main Menu Items */}
         {menuItems.map(renderMenuItem)}
+
+        {/* Centers Section */}
+        <div className="pt-3">
+          {!isCollapsed && (
+            <div className="px-3 mb-2">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Centers</p>
+            </div>
+          )}
+          
+          {isCollapsed ? (
+            // Collapsed view - show icon only
+            <button
+              onClick={() => toggleMenu('centers')}
+              className={`w-full flex items-center justify-center px-3 py-2.5 rounded-lg transition-all group relative ${
+                currentPage === 'view-scheduling' || currentPage === 'view-meeting-scheduling'
+                  ? 'bg-blue-600'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              title="Centers"
+            >
+              <Users className={`w-5 h-5 ${
+                currentPage === 'view-scheduling' || currentPage === 'view-meeting-scheduling'
+                  ? 'text-white'
+                  : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+              }`} />
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                Centers
+              </div>
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => toggleMenu('centers')}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all group ${
+                  currentPage === 'view-scheduling' || currentPage === 'view-meeting-scheduling'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Users className={`w-5 h-5 ${
+                    currentPage === 'view-scheduling' || currentPage === 'view-meeting-scheduling'
+                      ? 'text-white'
+                      : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                  }`} />
+                  <span className="text-sm font-medium">Centers (CSU)</span>
+                </div>
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    expandedMenus.includes('centers') ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {expandedMenus.includes('centers') && (
+                <div className="ml-8 mt-1 space-y-0.5 border-l-2 border-gray-200 dark:border-gray-700 pl-2">
+                  {centerMenuItems.map(item => {
+                    if (item.roles && !item.roles.includes(userRole)) return null;
+                    const isActive = currentPage === item.id;
+                    const href = getRouteFromPage(item.id);
+                    return (
+                      <Link
+                        key={item.id}
+                        href={href}
+                        onClick={() => {
+                          if (onSidebarToggle) {
+                            onSidebarToggle();
+                          }
+                        }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md transition-all text-sm ${
+                          isActive
+                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
         {/* Loans Section */}
         <div className="pt-3">
