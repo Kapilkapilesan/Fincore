@@ -55,6 +55,11 @@ export default function DashboardLayout({
     router.push('/login')
   }
 
+  const handleProfileSettings = () => {
+    // This will be handled by a modal in the future
+    console.log('Profile settings clicked')
+  }
+
   if (isLoading || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -67,7 +72,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <MainLayout user={user} onLogout={handleLogout} currentPath={pathname}>
+    <MainLayout user={user} onLogout={handleLogout} onProfileSettings={handleProfileSettings} currentPath={pathname}>
       {children}
     </MainLayout>
   )

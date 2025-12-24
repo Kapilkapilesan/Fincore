@@ -147,6 +147,12 @@ export function ViewMeetingScheduling() {
     }
   };
 
+  const handleDeleteAssignment = (index: number) => {
+    const updatedAssignments = temporaryAssignments.filter((_, i) => i !== index);
+    setTemporaryAssignments(updatedAssignments);
+    localStorage.setItem('temporaryAssignments', JSON.stringify(updatedAssignments));
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -355,6 +361,7 @@ export function ViewMeetingScheduling() {
           <div className="space-y-3">
             {temporaryAssignments.slice(-5).map((assignment, index) => {
               const center = centers.find(c => c.id === assignment.centerId);
+              const fullIndex = Math.max(0, temporaryAssignments.length - 5) + index;
               return (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div>
@@ -363,7 +370,16 @@ export function ViewMeetingScheduling() {
                       {assignment.originalUser} → {assignment.temporaryUser} on {assignment.date}
                     </p>
                   </div>
-                  <span className="text-xs text-gray-500">{assignment.reason}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">{assignment.reason}</span>
+                    <button
+                      onClick={() => handleDeleteAssignment(fullIndex)}
+                      className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                      title="Delete assignment"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               );
             })}

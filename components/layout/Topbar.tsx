@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, Bell, Search, User, LogOut, ChevronDown, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -12,11 +13,38 @@ interface TopbarProps {
   };
   onLogout: () => void;
   onToggleSidebar: () => void;
+  onProfileSettings?: () => void;
 }
 
-export function Topbar({ user, onLogout, onToggleSidebar }: TopbarProps) {
+export function Topbar({ user, onLogout, onToggleSidebar, onProfileSettings }: TopbarProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [userStatus, setUserStatus] = useState<'office_work' | 'on_field' | 'logout'>('office_work');
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+  // Close user menu on route change
+  useEffect(() => {
+    setShowUserMenu(false);
+  }, [pathname]);
+  // Close user menu on outside click
+  useEffect(() => {
+    if (!showUserMenu) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node) &&
+        userMenuButtonRef.current &&
+        !userMenuButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowUserMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
+  const [userStatus, setUserStatus] = useState<'office_work' | 'on_field'>('office_work');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
   const [notifications] = useState([
     { id: 1, message: '3 loans pending approval', type: 'warning', time: '10 min ago' },
@@ -31,8 +59,6 @@ export function Topbar({ user, onLogout, onToggleSidebar }: TopbarProps) {
         return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
       case 'on_field':
         return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
-      case 'logout':
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
       default:
         return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
     }
@@ -144,6 +170,7 @@ export function Topbar({ user, onLogout, onToggleSidebar }: TopbarProps) {
         {/* User Menu */}
         <div className="relative">
           <button
+            ref={userMenuButtonRef}
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="flex items-center gap-3 pl-2 pr-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
           >
@@ -159,7 +186,10 @@ export function Topbar({ user, onLogout, onToggleSidebar }: TopbarProps) {
 
           {/* User Dropdown */}
           {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-50">
+            <div
+              ref={userMenuRef}
+              className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-50"
+            >
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <p className="text-gray-900 dark:text-gray-100 font-semibold tracking-tight">{user.name}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-0.5">{user.role}</p>
@@ -168,28 +198,69 @@ export function Topbar({ user, onLogout, onToggleSidebar }: TopbarProps) {
                 )}
                 <div className="mt-3">
                   <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Work Status</label>
-                  <select
-                    value={userStatus}
-                    onChange={(e) => setUserStatus(e.target.value as any)}
-                    className={`w-full px-3 py-1.5 rounded-lg text-xs font-medium ${getStatusColor(userStatus)} border-0 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="office_work">Office Work</option>
-                    <option value="on_field">On Field</option>
-                  </select>
+                  <div className="flex gap-2">
+                    <button
+                      className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${userStatus === 'office_work' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
+                      onClick={() => {
+                        setUserStatus('office_work');
+                        onLogout();
+                      }}
+                    >
+                      Office Work
+                    </button>
+                    <button
+                      className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${userStatus === 'on_field' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
+                      onClick={() => {
+                        setUserStatus('on_field');
+                        onLogout();
+                      }}
+                    >
+                      On Field
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="p-2">
-                <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors font-medium">
+                <button 
+                  onClick={onProfileSettings}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors font-medium"
+                >
                   <User className="w-4 h-4" />
                   <span className="text-sm">Profile Settings</span>
                 </button>
                 <button
-                  onClick={onLogout}
+                  onClick={() => setShowLogoutConfirm(true)}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors mt-1 font-medium"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="text-sm">Logout</span>
                 </button>
+                    {/* Logout Confirmation Popup (moved to root) */}
+                    {showLogoutConfirm && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-md w-full mx-4 p-8 flex flex-col items-center">
+                          <LogOut className="w-10 h-10 text-red-500 mb-4" />
+                          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center mb-2">If you LogOut This will affect your Attendance</p>
+                          <div className="flex gap-4 mt-6 w-full justify-center">
+                            <button
+                              onClick={() => {
+                                setShowLogoutConfirm(false);
+                                onLogout();
+                              }}
+                              className="px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-semibold"
+                            >
+                              Yes
+                            </button>
+                            <button
+                              onClick={() => setShowLogoutConfirm(false)}
+                              className="px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-semibold"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
               </div>
             </div>
           )}

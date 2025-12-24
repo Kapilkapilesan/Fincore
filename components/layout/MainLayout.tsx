@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { ProfileSettingsModal } from '../modals/ProfileSettingsModal';
 
 interface User {
   id: string;
@@ -14,6 +15,7 @@ interface User {
 interface MainLayoutProps {
   user: User;
   onLogout: () => void;
+  onProfileSettings?: () => void;
   currentPath?: string;
   children: React.ReactNode;
 }
@@ -46,8 +48,9 @@ export type Page =
 
 // Export Page type for use in Sidebar
 
-export function MainLayout({ user, onLogout, currentPath = '', children }: MainLayoutProps) {
+export function MainLayout({ user, onLogout, onProfileSettings, currentPath = '', children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Default closed on mobile
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Map pathname to page for sidebar highlighting
   const getPageFromPath = (path: string): Page => {
@@ -105,6 +108,7 @@ export function MainLayout({ user, onLogout, currentPath = '', children }: MainL
           user={user}
           onLogout={onLogout}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onProfileSettings={() => setShowProfileModal(true)}
         />
 
         {/* Page Content */}
@@ -112,6 +116,13 @@ export function MainLayout({ user, onLogout, currentPath = '', children }: MainL
           {children}
         </main>
       </div>
+
+      {/* Profile Settings Modal */}
+      <ProfileSettingsModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        user={user}
+      />
     </div>
   );
 }

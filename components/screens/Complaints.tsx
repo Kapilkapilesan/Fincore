@@ -454,10 +454,20 @@ export function Complaints() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Status</p>
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${getStatusColor(viewingComplaint.status)}`}>
-                    {getStatusIcon(viewingComplaint.status)}
-                    {viewingComplaint.status}
-                  </span>
+                  <select
+                    value={viewingComplaint.status}
+                    onChange={e => {
+                      const newStatus = e.target.value as Complaint['status'];
+                      setComplaints(prev => prev.map(c => c.id === viewingComplaint.id ? { ...c, status: newStatus } : c));
+                      setViewingComplaint(vc => vc ? { ...vc, status: newStatus } : vc);
+                    }}
+                    className={`px-2 py-1 rounded text-xs border ${getStatusColor(viewingComplaint.status)} focus:outline-none`}
+                  >
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Closed">Closed</option>
+                  </select>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Complainant</p>
